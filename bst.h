@@ -574,6 +574,21 @@ template<typename Key, typename Value>
 Node<Key, Value>* BinarySearchTree<Key, Value>::internalFind(const Key& key) const
 {
     // TODO
+    Node<Key, Value>* node = root_;
+    while(node != nullptr) {
+        if (key < node->getKey()) {
+            node = node->getLeft();
+            continue;
+        }
+        else if (key > node->getKey()) {
+            node = node->getRight();
+            continue;
+        }
+        else {
+            return node;
+        }
+    }
+    return nullptr;
 }
 
 /**
