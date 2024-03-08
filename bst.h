@@ -545,9 +545,13 @@ template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::clear()
 {
     // TODO
-    std::queue<Node<Key, Value>*> 
-    findAll(root_, )
-    
+    std::queue<Node<Key, Value>*> q;
+    findAll(root_, q);
+    while(!q.empty()) {
+        delete q.front();
+        q.pop();
+    }
+    root_ = nullptr;
 }
 
 
