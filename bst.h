@@ -5,6 +5,7 @@
 #include <exception>
 #include <cstdlib>
 #include <utility>
+#include <queue>
 
 /**
  * A templated class for a Node in a search tree.
@@ -356,6 +357,7 @@ template<class Key, class Value>
 BinarySearchTree<Key, Value>::BinarySearchTree() 
 {
     // TODO
+    root_ = nullptr;
 }
 
 template<typename Key, typename Value>
@@ -445,6 +447,31 @@ template<class Key, class Value>
 void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &keyValuePair)
 {
     // TODO
+    Node<Key, Value>* node = root_;
+    while (node != nullptr) {
+        bool left = false;
+        if (keyValuePair.first < node->getKey()) {
+            left = true;
+        } else if (keyValuePair.first == node->getKey()) {
+            node->setValue(keyValuePair.second);
+        }
+        if (left) {
+            if (node->getLeft() == nullptr) {
+                node->setLeft(new Node<Key, Value>(keyValuePair.first, keyValuePair.second, node));
+                return;
+            }
+            node = node->getLeft();
+            continue;
+        } else {
+            if (node->getRight() == nullptr) {
+                node->setRight(new Node<Key, Value>(keyValuePair.first, keyValuePair.second, node));
+                return;
+            }
+            node = node->getRight();
+            continue;
+        }
+    }
+    root_ = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, node);
 }
 
 
@@ -457,6 +484,36 @@ template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::remove(const Key& key)
 {
     // TODO
+    Node<Key, Value>* node = root_;
+    while(node != nullptr) {
+        Key nkey = node->getKey();
+        if (key < nkey) {
+            node = node->getLeft();
+            continue;
+        }
+        if (key > nkey) {
+            node = node->getRight();
+            continue;
+        }
+        break;
+    }
+    if (node == nullptr) {
+        return;
+    }
+    while(node->getLeft() != nullptr) {
+        nodeSwap(node, node->getLeft());
+    }
+    Node<Key, Value>* right = node->getRight();
+    if (node->getParent()->getRight() == node) {
+        node->getParent()->setRight(right);
+    }
+    else {
+        node->getParent()->setLeft(right);
+    }
+    if (right != nullptr) {
+        right->setParent(node->getParent());
+    }
+    delete node;
 }
 
 
@@ -473,10 +530,24 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
 * A method to remove all contents of the tree and
 * reset the values in the tree for use again.
 */
+
+template<typename Key, typename Value>
+void findAll(Node<Key, Value>* node, std::queue<Node<Key, Value>*>& q) {
+    if (node == nullptr) {
+        return;
+    }
+    q.push(node);
+    findAll(node->getLeft(), q);
+    findALL(node->getRight(), q);
+}
+
 template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::clear()
 {
     // TODO
+    std::queue<Node<Key, Value>*> 
+    findAll(root_, )
+    
 }
 
 
