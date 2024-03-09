@@ -367,6 +367,16 @@ BinarySearchTree<Key, Value>::~BinarySearchTree()
 
 }
 
+template<typename Key, typename Value>
+void findAll(Node<Key, Value>* node, std::queue<Node<Key, Value>*>& q) {
+    if (node == nullptr) {
+        return;
+    }
+    q.push(node);
+    findAll(node->getLeft(), q);
+    findAll(node->getRight(), q);
+}
+
 /**
  * Returns true if tree is empty
 */
@@ -532,16 +542,6 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
 */
 
 template<typename Key, typename Value>
-void findAll(Node<Key, Value>* node, std::queue<Node<Key, Value>*>& q) {
-    if (node == nullptr) {
-        return;
-    }
-    q.push(node);
-    findAll(node->getLeft(), q);
-    findALL(node->getRight(), q);
-}
-
-template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::clear()
 {
     // TODO
@@ -563,6 +563,16 @@ Node<Key, Value>*
 BinarySearchTree<Key, Value>::getSmallestNode() const
 {
     // TODO
+    Node<Key, Value>* smallest = root_;
+    std::queue<Node<Key, Value>*> q;
+    findAll(root_, q);
+    while (!q.empty()) {
+        if (q.front()->getValue() < smallest->getValue()) {
+            smallest = q.front();
+        }
+        q.pop();
+    }
+    return smallest;
 }
 
 /**
