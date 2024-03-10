@@ -367,6 +367,10 @@ BinarySearchTree<Key, Value>::~BinarySearchTree()
 
 }
 
+/*****
+*helper functions to traverse the tree and return meaningful values
+*****/
+
 template<typename Key, typename Value>
 void findAll(Node<Key, Value>* node, std::queue<Node<Key, Value>*>& q) {
     if (node == nullptr) {
@@ -375,6 +379,23 @@ void findAll(Node<Key, Value>* node, std::queue<Node<Key, Value>*>& q) {
     q.push(node);
     findAll(node->getLeft(), q);
     findAll(node->getRight(), q);
+}
+
+template<typename Key, typename Value>
+int checkBalance(Node<Key, Value> root) {
+    if (root == nullptr) {
+        return 0;
+    }
+
+    int left = checkBalance(root->getLeft());
+    int right = checkBalance(root->getRight());
+
+    if (left != -1 && right != -1 && abs(left-right) <= 1) {
+        return max(left, right)+1;
+    }
+    else {
+        return -1;
+    }
 }
 
 /**
@@ -608,6 +629,11 @@ template<typename Key, typename Value>
 bool BinarySearchTree<Key, Value>::isBalanced() const
 {
     // TODO
+    if (checkBalance(root_) != -1) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 
