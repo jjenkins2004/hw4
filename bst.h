@@ -414,7 +414,7 @@ void findAll(Node<Key, Value>* node, std::queue<Node<Key, Value>*>& q) {
 }
 
 template<typename Key, typename Value>
-int checkBalance(Node<Key, Value> root) {
+int checkBalance(Node<Key, Value>* root) {
     if (root == nullptr) {
         return 0;
     }
