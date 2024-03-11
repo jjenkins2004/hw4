@@ -517,6 +517,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
             left = true;
         } else if (keyValuePair.first == node->getKey()) {
             node->setValue(keyValuePair.second);
+            return;
         }
         if (left) {
             if (node->getLeft() == nullptr) {
