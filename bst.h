@@ -250,6 +250,7 @@ protected:
 
     // Add helper functions here
     static Node<Key, Value>* getSmallestNode(Node<Key, Value>* node);
+    static Node<Key, Value>* successor(Node<Key, Value>* current);
 
 protected:
     Node<Key, Value>* root_;
@@ -270,6 +271,7 @@ BinarySearchTree<Key, Value>::iterator::iterator(Node<Key,Value> *ptr)
 {
     // TODO
     current_ = ptr;
+    
 }
 
 /**
@@ -338,34 +340,8 @@ typename BinarySearchTree<Key, Value>::iterator&
 BinarySearchTree<Key, Value>::iterator::operator++()
 {
     // TODO
-   if (current_->getParent() != nullptr) {
-        if (current_->getRight() != nullptr) {
-            current_ = BinarySearchTree<Key, Value>::getSmallestNode(current_->getRight());
-            return *this;
-        }
-        else if (current_->getParent()->getLeft() == current_) {
-            current_ = current_->getParent();
-            return *this;
-        }
-        else {
-            while(current_->getParent() != nullptr && current_->getParent()->getRight() == current_) {
-                current_ = current_->getParent();
-            }
-            if (current_->getParent() == nullptr) {
-                current_ = nullptr;
-                return *this;
-            }
-            else {
-                current_ = current_->getParent();
-                return *this;
-            }
-        }
-   } else {
-    current_ = getSmallestNode(current_->getRight());
-    return *this;
-   }
-   
-
+   current_ = successor(current_);
+   return *this;
 }
 
 
@@ -565,7 +541,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         return;
     }
     while(node->getLeft() != nullptr && node->getRight() != nullptr) {
-        nodeSwap(node, predecessor());
+        nodeSwap(node, predecessor(node));
     }
     if (node->getParent() == nullptr) {
       if (node->getRight() != nullptr) {
@@ -593,30 +569,36 @@ Node<Key, Value>*
 BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
 {
     // TODO
-    if (current->getParent() != nullptr) {
-        if (current->getLeft() != nullptr) {
-            return current->getLeft();
-        }
-        else if (current->getParent()->getRight() == current) {
-            return current->getParent();
-        }
-        else {
-            while (current->getParent() != nullptr && current->getParent()->getLeft() == current) {
-                current = current->getParent();
-            }
-            if (current->getParent() == nullptr) {
-                return nullptr;
-            } else {
-                return current->getParent();
-            }
-        }
-    }
-    else {
+    if (current->getLeft() != nullptr) {
         current = current->getLeft();
-        while (current->getRight() != nullptr) {
-            current = current->getRight();
+        while(current->getRight() != nullptr) {
+            current = current->getLeft();
         }
         return current;
+    }
+    else {
+        while(current->getParent() != nullptr && current->getParent()->getLeft() == current) {
+            current = current->getParent();
+        }
+        return current->getParent();
+    }
+}
+
+template<class Key, class Value>
+Node<Key, Value>*
+BinarySearchTree<Key, Value>::successor(Node<Key, Value>* current) {
+    if (current->getRight() != nullptr) {
+        current = current->getRight();
+        while (current->getLeft() != nullptr) {
+            current = current->getLeft();
+        }
+        return current;
+    }
+    else {
+        while (current->getParent() != nullptr && current->getParent()->getRight() == current) {
+            current = current->getParent();
+        }
+        return current->getParent();
     }
 }
 
