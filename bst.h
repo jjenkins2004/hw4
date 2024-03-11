@@ -546,18 +546,44 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
     if (node->getParent() == nullptr) {
       if (node->getRight() != nullptr) {
         root_ = node->getRight();
+        root_->setParent(nullptr);
+      }
+      else if (node->getLeft() != nullptr){
+        root_ = node->getLeft();
+        root_->setParent(nullptr);
       }
       else {
-        root_ = node->getLeft();
+        root_ = nullptr;
       }
       delete node;
       return;
     }
-   if (node->getRight() != nullptr) {
-      node->getParent()->setLeft(node->getRight());
+   if (node->getParent()->getRight() == node) {
+      if (node->getRight() != nullptr) {
+        node->getParent()->setRight(node->getRight());
+        node->getRight()->setParent(node->getParent());
+      }
+      else if (node->getLeft() != nullptr){
+         node->getParent()->setRight(node->getLeft());
+         node->getLeft()->setParent(node->getParent());
+      }
+      else {
+        std::cout << "got here" << std::endl;
+        node->getParent()->setRight(nullptr);
+      }
    }
    else {
-    node->getParent()->setLeft(node->getLeft());
+      if (node->getRight() != nullptr) {
+        node->getParent()->setLeft(node->getRight());
+        node->getRight()->setParent(node->getParent());
+      }
+      else if (node->getLeft() != nullptr){
+         node->getParent()->setLeft(node->getLeft());
+         node->getLeft()->setParent(node->getParent());
+      }
+      else {
+        node->getParent()->setLeft(nullptr);
+      }
    }
     delete node;
 }
