@@ -268,6 +268,7 @@ template<class Key, class Value>
 BinarySearchTree<Key, Value>::iterator::iterator(Node<Key,Value> *ptr)
 {
     // TODO
+    current = ptr;
 }
 
 /**
@@ -277,7 +278,7 @@ template<class Key, class Value>
 BinarySearchTree<Key, Value>::iterator::iterator() 
 {
     // TODO
-
+    current = nullptr;
 }
 
 /**
@@ -310,6 +311,7 @@ BinarySearchTree<Key, Value>::iterator::operator==(
     const BinarySearchTree<Key, Value>::iterator& rhs) const
 {
     // TODO
+    return rhs.current_ == current_;
 }
 
 /**
@@ -322,6 +324,7 @@ BinarySearchTree<Key, Value>::iterator::operator!=(
     const BinarySearchTree<Key, Value>::iterator& rhs) const
 {
     // TODO
+    return rhs.curent_ != current_;
 
 }
 
@@ -334,6 +337,33 @@ typename BinarySearchTree<Key, Value>::iterator&
 BinarySearchTree<Key, Value>::iterator::operator++()
 {
     // TODO
+   if (current_->getParent() != nullptr) {
+        if (current_->getRight() != nullptr) {
+            current_ = getSmallestNode(current_->getRight());
+            return;
+        }
+        else if (current_->getParent()->getLeft() == current_) {
+            current_ = current_->getParent();
+            return;
+        }
+        else {
+            while(current_->getParent() != nullptr && current_->getParent()->getRight() == current_) {
+                current_ = current_->getParent();
+            }
+            if (current_->getParent() == nullptr) {
+                current_ = nullptr;
+                return;
+            }
+            else {
+                current_ = current_->getParent();
+                return;
+            }
+        }
+   } else {
+    current_ = getSmallestNode(current->getRight());
+    return;
+   }
+   
 
 }
 
@@ -364,6 +394,7 @@ template<typename Key, typename Value>
 BinarySearchTree<Key, Value>::~BinarySearchTree()
 {
     // TODO
+    clear();
 
 }
 
@@ -585,13 +616,8 @@ BinarySearchTree<Key, Value>::getSmallestNode() const
 {
     // TODO
     Node<Key, Value>* smallest = root_;
-    std::queue<Node<Key, Value>*> q;
-    findAll(root_, q);
-    while (!q.empty()) {
-        if (q.front()->getValue() < smallest->getValue()) {
-            smallest = q.front();
-        }
-        q.pop();
+    while(smallest->getLeft() != nullptr) {
+        smallest = smallest->getLeft();
     }
     return smallest;
 }
