@@ -567,8 +567,9 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
     while(node->getLeft() != nullptr) {
         nodeSwap(node, node->getLeft());
     }
+    
     Node<Key, Value>* right = node->getRight();
-    if (node->getParent()->getRight() == node) {
+    if (right != nullptr && node->getParent()->getRight() == node) {
         node->getParent()->setRight(right);
     }
     else {
