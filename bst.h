@@ -568,7 +568,6 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
          node->getLeft()->setParent(node->getParent());
       }
       else {
-        std::cout << "got here" << std::endl;
         node->getParent()->setRight(nullptr);
       }
    }
