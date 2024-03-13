@@ -137,7 +137,8 @@ protected:
     virtual void nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2);
 
     // Add helper functions here
-
+    static std::pair<bool, AVLNode<Key, Value>*> insert_node(const std::pair<const Key, Value> &new_item);
+    static void rotate(AVLNode<Key, Value>* node, std::pair<AVLNode<Key, Value>*, AVLNode<Key, Value>*> prev);
 
 };
 
@@ -149,6 +150,56 @@ template<class Key, class Value>
 void AVLTree<Key, Value>::insert (const std::pair<const Key, Value> &new_item)
 {
     // TODO
+    //inserts node into correct place and returns whether grandparent balance val needs to be changed
+    //(balance has already been changed for the parent of the inserted node) and a pointer to the node
+    //that was put into the tree
+    std::pair<bool, AVLNode<Key, Value>*> insertInfo = insert_node(new_item);
+
+    //if the insertInfo second was nullptr, then no further balancing is needed and function can terminate
+    if (insertInfo.second == nullptr) {
+        return;
+    }
+
+    //change variable tells next loop iteration whether the balance value needs to be changed. The parent balance has to be changed
+    //when the child's balance value changes to 1 or -1.
+    bool change = insertInfo.first;
+
+    //keeps track of two previously visited nodes for rotations
+    std::pair<AVLNode<Key, Value>*, AVLNode<Key, Value>*> prev = std::make_pair(insertInfo.second, nullptr);
+
+    AVLNode<Key, Value>* curr = prev.first->getParent();
+
+    while (curr->getParent() != nullptr) {
+        prev.second = prev.first; prev.first = curr;
+        curr = curr->getParent();
+        
+        if (change) {
+            if (curr->getRight() == prev.first) {
+                curr->updateBalance(1);
+            }
+            else if (curr->getLeft() == prev.first) {
+                curr->updateBalance(-1);
+            }
+            else {
+                std::cout << "this is not supposed to happen" << std::endl;
+            }
+
+            if (curr.getBalance() == 0) {
+                return;
+            }
+            else if (curr == -1 || curr == 1) {
+                continue;
+            }
+            //in this case a rotation needs to happen
+            else {
+                
+            }
+        }
+        //if there is no change needed to balance values, then the tree is still an AVL tree
+        else {
+            return;
+        }
+    }
 }
 
 /*
@@ -170,5 +221,83 @@ void AVLTree<Key, Value>::nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* 
     n2->setBalance(tempB);
 }
 
+template<class Key, class Value>
+std::pair<bool, AVLNode<Key, Value>*> AVLTree<Key, Value>::insert_node(const std::pair<const Key, Value> &new_item) {
+    AVLNode<Key, Value>* node = BinarySearchTree<Key, Value>::root_;
+    if (node != nullptr) {
+        while (node != nullptr) {
+            bool left = false;
+            if (new_item.first < node->getKey()) {
+                left = true;
+            } else if (new_item.first == node->getKey()) {
+                node->setValue(new_item.second);
+                return std::make_pair(false, nullptr);
+            }
+            if (left) {
+                if (node->getLeft() == nullptr) {
+                    node->setLeft(new AVLNode<Key, Value>(new_item.first, new_item.second, node));
+                    node->updateBalance(-1);
+                    if (node->getRight() == nullptr) {
+                        return std::make_pair(true, node->getLeft());
+                    } else {
+                        return std::make_pair(false, node->getLeft());
+                    }
+                }
+                node = node->getLeft();
+                continue;
+            } else {
+                if (node->getRight() == nullptr) {
+                    node->setRight(new AVLNode<Key, Value>(new_item.first, new_item.second, node));
+                    node->updateBalance(1);
+                    if (node->getLeft() == nullptr) {
+                        return std::make_pair(true, node->getRight());
+                    } else {
+                        return std::make_pair(false, node->getRight());
+                    }
+                        
+                }
+                node = node->getRight();
+                continue;
+            }
+        }
+    }
+    else {
+        BinarySearchTree<Key, Value>::root_ = new AVLNode<Key, Value>(new_item.first, new_item.second, node);
+        return std::make_pair(false, nullptr);
+    }
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::rotate(AVLNode<Key, Value>* node, std::pair<AVLNode<Key, Value>*, AVLNode<Key, Value>*> prev) {
+
+    //left rotation
+    if (node->getRight() == prev.first) {
+        //Zig-zig
+        if (prev.first->getRight() == prev.second) {
+
+        }
+        //Zig-Zag
+        else if (prev.first->getLeft() == prev.second) {
+
+        } else {
+            std::cout <<"something went wrong in rotation" << std::endl;
+        }
+    }
+
+    //right rotation
+    else if (node->getLeft() == prev.first) {
+        //zig-zig
+        if (prev.first->getLeft() == prev.second) {
+
+        }
+        //Zig-Zag
+        else if (prev.first->getRight() == prev.second) {
+
+        }
+        else {
+            std::cout <<"something went wrong in rotation" << std::endl;
+        }
+    }
+}
 
 #endif
