@@ -377,7 +377,6 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key, Value>* n) {
             n->getRight()->getParent()->setLeft(n);
         } else {
             n->getRight()->getParent()->setRight(n);
-            int key = n->getRight()->getParent()->getKey();
         }
     } else {
         root_ = n;
@@ -385,8 +384,6 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key, Value>* n) {
     }
     n->setParent(n->getRight()->getParent());
     n->getRight()->setParent(n);
-    std::cout << "printing" << std::endl;
-    this->print();
 }
 
 template<class Key, class Value>
