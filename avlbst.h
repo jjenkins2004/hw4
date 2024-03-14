@@ -296,13 +296,13 @@ void AVLTree<Key, Value>::rotate(AVLNode<Key, Value>* node, std::pair<AVLNode<Ke
                 prev.first->setBalance(0);
             } else if (prev.second->getBalance() == 1) {
                 prev.second->setBalance(0);
-                prev.first->setBalance(-1);
-                node->setBalance(0);
+                prev.first->setBalance(0);
+                node->setBalance(-1);
             }
             else {
                 prev.second->setBalance(0);
-                prev.first->setBalance(0);
-                node->setBalance(1);
+                prev.first->setBalance(1);
+                node->setBalance(0);
             }
         } else {
             std::cout <<"something went wrong in rotation" << std::endl;
