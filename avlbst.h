@@ -134,7 +134,7 @@ public:
     virtual void insert (const std::pair<const Key, Value> &new_item); // TODO
     virtual void remove(const Key& key);  // TODO
     void printBalance();
-    void clear() override;
+    void clear();
 protected:
     virtual void nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2);
     void printNodeBalance(AVLNode<Key, Value>* n);
