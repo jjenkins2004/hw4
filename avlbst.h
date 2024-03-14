@@ -188,7 +188,6 @@ void AVLTree<Key, Value>::insert (const std::pair<const Key, Value> &new_item)
             }
             else {
                 std::cout << "this is not supposed to happen" << std::endl;
-                this->printRoot(curr);
             }
 
             if (curr->getBalance() == 0) {
@@ -347,6 +346,9 @@ void AVLTree<Key, Value>::rotateLeft(AVLNode<Key, Value>* n) {
     AVLNode<Key, Value>* temp = n->getLeft();
     n->setLeft(n->getParent());
     n->getLeft()->setRight(temp);
+    if (temp != nullptr) {
+        temp->setParent(n->getLeft());
+    }
     if (n->getLeft()->getParent() != nullptr) {
         if (n->getLeft()->getParent()->getLeft() == n->getLeft()) {
             n->getLeft()->getParent()->setLeft(n);
@@ -367,11 +369,15 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key, Value>* n) {
     AVLNode<Key, Value>* temp = n->getRight();
     n->setRight(n->getParent());
     n->getRight()->setLeft(temp);
+    if (temp != nullptr) {
+        temp->setParent(n->getRight());
+    }
     if (n->getRight()->getParent() != nullptr) {
         if (n->getRight()->getParent()->getLeft() == n->getRight()) {
             n->getRight()->getParent()->setLeft(n);
         } else {
             n->getRight()->getParent()->setRight(n);
+            int key = n->getRight()->getParent()->getKey();
         }
     } else {
         root_ = n;
@@ -379,6 +385,8 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key, Value>* n) {
     }
     n->setParent(n->getRight()->getParent());
     n->getRight()->setParent(n);
+    std::cout << "printing" << std::endl;
+    this->print();
 }
 
 template<class Key, class Value>
