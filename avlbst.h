@@ -188,6 +188,7 @@ void AVLTree<Key, Value>::insert (const std::pair<const Key, Value> &new_item)
             }
             else {
                 std::cout << "this is not supposed to happen" << std::endl;
+                printRoot(curr);
             }
 
             if (curr->getBalance() == 0) {
