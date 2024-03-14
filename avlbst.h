@@ -133,8 +133,10 @@ class AVLTree : public BinarySearchTree<Key, Value>
 public:
     virtual void insert (const std::pair<const Key, Value> &new_item); // TODO
     virtual void remove(const Key& key);  // TODO
+    void printBalance();
 protected:
     virtual void nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2);
+    void printNodeBalance(AVLNode<Key, Value>* n);
 
     // Add helper functions here
     std::pair<bool, AVLNode<Key, Value>*> insert_node(const std::pair<const Key, Value> &new_item);
@@ -371,10 +373,27 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key, Value>* n) {
             n->getRight()->getParent()->setRight(n);
         }
     } else {
+        root_ = n;
         BinarySearchTree<Key, Value>::root_ = n;
     }
     n->setParent(n->getRight()->getParent());
     n->getRight()->setParent(n);
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::printBalance() {
+    printNodeBalance(root_);
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::printNodeBalance(AVLNode<Key, Value>* n) {
+    if (n == nullptr) {
+        return;
+    }
+    int balance = n->getBalance();
+    std::cout << "Balance of key " << n->getKey() << ": " << balance << std::endl;
+    printNodeBalance(n->getLeft());
+    printNodeBalance(n->getRight());
 }
 
 #endif
