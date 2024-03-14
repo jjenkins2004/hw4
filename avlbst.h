@@ -134,6 +134,7 @@ public:
     virtual void insert (const std::pair<const Key, Value> &new_item); // TODO
     virtual void remove(const Key& key);  // TODO
     void printBalance();
+    void clear() override;
 protected:
     virtual void nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2);
     void printNodeBalance(AVLNode<Key, Value>* n);
@@ -400,6 +401,12 @@ void AVLTree<Key, Value>::printNodeBalance(AVLNode<Key, Value>* n) {
     std::cout << "Balance of key " << n->getKey() << ": " << balance << std::endl;
     printNodeBalance(n->getLeft());
     printNodeBalance(n->getRight());
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::clear() {
+    root_ = nullptr;
+    BinarySearchTree<Key, Value>::clear();
 }
 
 #endif
