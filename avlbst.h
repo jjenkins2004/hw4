@@ -293,11 +293,14 @@ void AVLTree<Key, Value>:: remove(const Key& key)
 
 template<class Key, class Value>
 void AVLTree<Key, Value>::nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2)
-{
+{   if (n1 == root_) {
+        root_ = n2;
+    }
     BinarySearchTree<Key, Value>::nodeSwap(n1, n2);
     int8_t tempB = n1->getBalance();
     n1->setBalance(n2->getBalance());
     n2->setBalance(tempB);
+    
 }
 
 template<class Key, class Value>
