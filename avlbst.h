@@ -138,9 +138,11 @@ public:
 protected:
     virtual void nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2);
     void printNodeBalance(AVLNode<Key, Value>* n);
+    static AVLNode<Key, Value>* predecessor(AVLNode<Key, Value>* current);
 
     // Add helper functions here
     std::pair<bool, AVLNode<Key, Value>*> insert_node(const std::pair<const Key, Value> &new_item);
+    void removeFix(AVLNode<Key, Value>* n, int diff);
     void rotate(AVLNode<Key, Value>* node, std::pair<AVLNode<Key, Value>*, AVLNode<Key, Value>*> prev);
     void rotateRight(AVLNode<Key, Value>* n);
     void rotateLeft(AVLNode<Key, Value>* n);
@@ -218,6 +220,76 @@ template<class Key, class Value>
 void AVLTree<Key, Value>:: remove(const Key& key)
 {
     // TODO
+    AVLNode<Key, Value>* node = root_;
+    //finds the node that needs to be removed
+    while(node != nullptr) {
+        Key nkey = node->getKey();
+        if (key < nkey) {
+            node = node->getLeft();
+            continue;
+        }
+        if (key > nkey) {
+            node = node->getRight();
+            continue;
+        }
+        break;
+    }
+    if (node == nullptr) {
+        return;
+    }
+    //swaps node that needs to be deleted with predecessor until it doesn't have two children
+    while(node->getLeft() != nullptr && node->getRight() != nullptr) {
+        nodeSwap(node, predecessor(node));
+    }
+    //if parent of node is null that means it is the root and no rotations will be required
+    if (node->getParent() == nullptr) {
+      if (node->getRight() != nullptr) {
+        root_ = node->getRight();
+        BinarySearchTree<Key, Value>::root_ = root_;
+        root_->setParent(nullptr);
+
+      }
+      else if (node->getLeft() != nullptr){
+        root_ = node->getLeft();
+        BinarySearchTree<Key, Value>::root_ = root_;
+        root_->setParent(nullptr);
+      }
+      else {
+        root_ = nullptr;
+      }
+      delete node;
+      return;
+    }
+    //need to update balances and check if rotations are needed
+    if (node->getParent()->getRight() == node) {
+      if (node->getRight() != nullptr) {
+        node->getParent()->setRight(node->getRight());
+        node->getRight()->setParent(node->getParent());
+      }
+      else if (node->getLeft() != nullptr){
+         node->getParent()->setRight(node->getLeft());
+         node->getLeft()->setParent(node->getParent());
+      }
+      else {
+        node->getParent()->setRight(nullptr);
+      }
+      removeFix(node->getParent(), -1);
+   }
+   else {
+      if (node->getRight() != nullptr) {
+        node->getParent()->setLeft(node->getRight());
+        node->getRight()->setParent(node->getParent());
+      }
+      else if (node->getLeft() != nullptr){
+         node->getParent()->setLeft(node->getLeft());
+         node->getLeft()->setParent(node->getParent());
+      }
+      else {
+        node->getParent()->setLeft(nullptr);
+      }
+      removeFix(node->getParent(), 1);
+   }
+    delete node;
 }
 
 template<class Key, class Value>
@@ -408,5 +480,92 @@ void AVLTree<Key, Value>::clear() {
     root_ = nullptr;
     BinarySearchTree<Key, Value>::clear();
 }
+
+//using slides recursive implementation this time. It is lowk a lot cleaner and easier than what I did for insert. Oh well, it was a learning experience!
+template<class Key, class Value>
+void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* n, int diff) {
+    if (n == nullptr) {
+        return;
+    }
+    AVLNode<Key, Value>* p = n->getParent();
+    //ndiff is the difference for the next recursive call
+    int ndiff;
+    if (p != nullptr) {
+        if (n == p->getLeft()) {
+            ndiff = 1;
+        }
+        else {
+            ndiff = -1;
+        }
+    }
+    n->updateBalance(diff);
+    //in this case a rotation needs to happen
+    if (n->getBalance() == -2) {
+        AVLNode<Key, Value>* c = n->getLeft();
+        if (c->getBalance() == -1) {
+            rotate(n, std::make_pair(c, c->getLeft()));
+            removeFix(p, ndiff);
+        }
+        else if (c->getBalance() == 0) {
+            rotate(n, std::make_pair(c, c->getLeft()));
+            n->setBalance(-1);
+            c->setBalance(1);
+            return;
+        }
+        else {
+            rotate(n, std::make_pair(c, c->getRight()));
+            removeFix(p, ndiff);
+        }
+    }
+    else if (n->getBalance() == -1) {
+        return;
+    }
+    else if (n->getBalance() == 0) {
+        removeFix(p, ndiff);
+    }
+    //rotation must happen
+    else if (n->getBalance() == 2) {
+        AVLNode<Key, Value>* c = n->getRight();
+        if (c->getBalance() == 1) {
+            rotate(n, std::make_pair(c, c->getRight()));
+            removeFix(p, ndiff);
+        }
+        else if (c->getBalance() == 0) {
+            rotate(n, std::make_pair(c, c->getRight()));
+            n->setBalance(1);
+            c->setBalance(-1);
+            return;
+        }
+        else {
+            rotate(n, std::make_pair(c, c->getLeft()));
+            removeFix(p, ndiff);
+        }
+    }
+    else if (n->getBalance() == 1) {
+        return;
+    }
+    else {
+        std::cout << "something went wrong in removeFix()" << std::endl;
+    }
+
+}
+
+template<class Key, class Value>
+AVLNode<Key, Value>* AVLTree<Key, Value>::predecessor(AVLNode<Key, Value>* current) {
+    if (current->getLeft() != nullptr) {
+        current = current->getLeft();
+        while(current->getRight() != nullptr) {
+            current = current->getRight();
+        }
+        return current;
+    }
+    else {
+        while(current->getParent() != nullptr && current->getParent()->getLeft() == current) {
+            current = current->getParent();
+        }
+        return current->getParent();
+    }
+}
+
 
 #endif
