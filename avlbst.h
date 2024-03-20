@@ -254,9 +254,8 @@ void AVLTree<Key, Value>:: remove(const Key& key)
         BinarySearchTree<Key, Value>::root_ = root_;
         root_->setParent(nullptr);
       }
-      else {
-        root_ = nullptr;
-      }
+      root_ = nullptr;
+      BinarySearchTree<Key, Value>::root_ = nullptr;
       delete node;
       return;
     }
